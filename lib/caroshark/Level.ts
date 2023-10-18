@@ -34,7 +34,7 @@ export class Level {
       str
         .split("\n")
         .map((x) => x.trim())
-        .map((x) => (x != "" && !isNaN(x as any) ? parseInt(x) : x));
+        .map((x) => (x != "" && !isNaN(x as any) ? parseFloat(x) : x));
 
     this.#loadInFiles();
   }
@@ -120,6 +120,7 @@ export class Level {
       );
     }
     this.exampleFile = fs.readFileSync(getInFilesPath(`level${this.level}_example.in`), "utf8");
+    this.exampleFile = this.inFilesMap(this.exampleFile);
 
     this.inFiles = [];
     let subLevel = 1;

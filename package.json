@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "ex": "npm run start -- example",
+    "sol": "ts-node src/index.ts solution",
+    "dev": "npm run start -- dev",
+
+    "start": "ts-node-dev --rs --cls --respawn src/index.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.1",
+    "@types/node": "^20.8.7",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.2.2"
+  }
+}

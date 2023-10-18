@@ -18,14 +18,11 @@ level.main = async (data: Array<any>, subLevel: number) => {
     let tournament = "";
     while(rock.amount > 0) {
         if(paper.amount == 1) {
-            tournament += "RP";
-            rock.amount--;
+            tournament += "P";
             paper.amount--;
-            if(rock.amount) {
-                const rockAmount = Math.min(rock.amount, 3)
-                tournament += "R".repeat(rockAmount);
-                rock.amount -= rockAmount;
-            }
+            const rockAmount = Math.min(rock.amount, 3)
+            tournament += "R".repeat(rockAmount);
+            rock.amount -= rockAmount;
         } else {
             const rockAmount = Math.min(rock.amount, 3)
             tournament += "R".repeat(rockAmount);
@@ -38,8 +35,10 @@ level.main = async (data: Array<any>, subLevel: number) => {
         console.log(paper.amount)
     tournament += "P".repeat(paper.amount);
     tournament += "S".repeat(scissors.amount);
-    
-    result.push(tournament);
+
+    tournament = tournamentAfterTwoRounds(tournament);
+    if(tournament.includes('R'))
+        result.push(tournament);
   }
   return result.join('\n');
 };
@@ -51,7 +50,7 @@ level.generateOutput({
   ...(runType === RunTypes.SOLUTION
     ? {}
     : {
-        // subLevel: 1,
+        subLevel: 1,
         // subLevelFrom: 2,
         // subLevelTo: 3,
       }),

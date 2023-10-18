@@ -120,6 +120,7 @@ export class Level {
       );
     }
     this.exampleFile = fs.readFileSync(getInFilesPath(`level${this.level}_example.in`), "utf8");
+    this.exampleFile = this.inFilesMap(this.exampleFile);
 
     this.inFiles = [];
     let subLevel = 1;

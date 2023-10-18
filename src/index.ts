@@ -1,29 +1,19 @@
 import { Level, RunTypes } from "../lib/caroshark";
+import { winnings, fight } from "./utils";
 
 const runType = (process.argv[2] as RunTypes) || "example";
 
 const level = new Level({ level: 2 });
 
-const winnings = {
-  P: "R",
-  R: "S",
-  S: "P",
-};
-
-const fight = (left: "P" | "R" | "S", right: string) => {
-  return left == right ? left : winnings[left] == right ? left : right;
-};
-
 level.main = async (data: Array<any>, subLevel: number) => {
-    console.log(data[0]);
-  const [n, m] = (data[0] as string).split(" ").map(x => +x);
+  const [n, m] = (data[0] as string).split(" ").map((x) => +x);
   let result = [];
   for (let i = 1; i <= n; i++) {
     let tournament = data[i];
 
-    while (tournament.length > 2) {
+    for (let k=0; k<2; k++) {
       let nextBracket = "";
-      for (let j = 0; j < tournament.length; j+=2) {
+      for (let j = 0; j < tournament.length; j += 2) {
         let left: "P" | "R" | "S" = tournament[j];
         let right = tournament[j + 1];
         nextBracket += fight(left, right);

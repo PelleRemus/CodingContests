@@ -133,5 +133,5 @@ $RECYCLE.BIN/
 _NCrunch*
 
 # Other
-*.vs/*
-*.vscode/*
+*/*.vs/*
+*/*.vscode/*

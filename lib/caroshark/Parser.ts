@@ -73,9 +73,7 @@ export class Parser {
         return this
     }
 
-    arrayOfObject(name: string, length: number | string,
-        p: (P: Parser) => any
-    ) {
+    arrayOfObject(name: string, length: number | string, p: (P: Parser) => any) {
 
         const n = typeof length === 'number' ? length : this.obj[length];
         const arr = [];

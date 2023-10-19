@@ -1,5 +1,20 @@
 # CaroShark
 
+### Map the in files
+```ts
+const caroshark = new Caroshark({ level: 2 });
+
+Caroshark.inFilesMap = (str: string): LevelData => {
+    return (new Parser(str.split("\n").map((x) => x.trim())))
+        .number("n")
+        .numbers("a b")
+        .numbers("m")
+        .string("path")
+        .lines("commands", 'n', (line: string) => line.split(' '))
+        .build(); 
+}
+```
+
 ### New level steps
 1. duplica folderul `levels/levelTemplate`
 2. renumeste in `levelN` ex. level1, level2 ...

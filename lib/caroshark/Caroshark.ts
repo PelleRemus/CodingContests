@@ -2,20 +2,23 @@ import * as fs from "fs";
 import * as path from "path";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export class Level {
+export class Caroshark {
   /** La care level este acuma. */
   level: number;
 
   /** Prin functia asta trece fiecare fisier .in cand accesez level.in
    * @returns default value e ca face split per '\n'
    */
-  inFilesMap: (str: string) => any;
+  static inFilesMap: (str: string) => any;
 
   /** Continutul pur al fisierelor de .in */
   inFiles: Array<string> = [];
 
+  #files: Array<ReturnType<typeof Caroshark.inFilesMap>> = [];
+
   /** Continutul pur al fisierului de example */
-  exampleFile: string = "";
+  #exampleInFile: string = "";
+  #exampleFile: ReturnType<typeof Caroshark.inFilesMap>;
 
   /**
    * @param data va fi data din fiecare fisier .in mapat
@@ -30,7 +33,7 @@ export class Level {
   }) {
     this.level = level;
 
-    this.inFilesMap = (str: string) =>
+    Caroshark.inFilesMap = (str: string) =>
       str
         .split("\n")
         .map((x) => x.trim())
@@ -39,14 +42,17 @@ export class Level {
     this.#loadInFiles();
   }
 
-  get in() {
-    return this.inFiles.map((file) => {
-      // removing the trailing endline
-      if (file[file.length - 1] === "\n")
-        file = file.substring(0, file.length - 1);
-      return this.inFilesMap(file);
-    });
+  #formatFile(fileContent: string) {
+    // removing the trailing endline
+    if (fileContent[fileContent.length - 1] === "\n")
+      fileContent = fileContent.substring(0, fileContent.length - 1);
+    return Caroshark.inFilesMap(fileContent);
   }
+  /*   get in() {
+      return this.inFiles.map((file) => {
+        this.#formatFile(file)
+      });
+    } */
 
   async #generateOutputLevel({
     consoleOnly = true,
@@ -59,7 +65,7 @@ export class Level {
     console.log(consoleOnly ? `\nOutput level ${this.level}_${subLevel}:` : `\nGenerating the file level${this.level}_${subLevel}.out:`);
 
     //content
-    const output = await this.main(this.in[i], subLevel);
+    const output = await this.main(this.#files[i], subLevel);
     if (consoleOnly) {
       console.log("--- Result:");
       console.log(output);
@@ -81,7 +87,7 @@ export class Level {
     exampleOnly = true,
     subLevel,
     subLevelFrom = 1,
-    subLevelTo = this.in.length,
+    subLevelTo = this.inFiles.length,
   }: {
     consoleOnly?: boolean; exampleOnly?: boolean,
     subLevel?: number,
@@ -89,8 +95,13 @@ export class Level {
     subLevelTo?: number
   } = {}) {
 
+    if (exampleOnly)
+      this.#exampleFile = this.#formatFile(this.#exampleInFile)
+    else
+      this.#files = this.inFiles.map((file) => this.#formatFile(file))
+    
     if (exampleOnly) {
-      const output = await this.main(this.exampleFile, -1);
+      const output = await this.main(this.#exampleFile, -1);
       if (consoleOnly) {
         console.log("Example level:");
         console.log(output);
@@ -119,8 +130,7 @@ export class Level {
         fileName
       );
     }
-    this.exampleFile = fs.readFileSync(getInFilesPath(`level${this.level}_example.in`), "utf8");
-    this.exampleFile = this.inFilesMap(this.exampleFile);
+    this.#exampleInFile = fs.readFileSync(getInFilesPath(`level${this.level}_example.in`), "utf8");
 
     this.inFiles = [];
     let subLevel = 1;

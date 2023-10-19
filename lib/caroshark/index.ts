@@ -1,4 +1,5 @@
-import { Level } from './Level';
+import { Caroshark } from './Caroshark';
+import { Parser } from './Parser';
 export enum RunTypes {
 
   // Citesteste si scrie(consola) doar fisierul de test. Live update
@@ -11,5 +12,6 @@ export enum RunTypes {
   SOLUTION = "solution"
 }
 export {
-  Level
+  Caroshark,
+  Parser
 };

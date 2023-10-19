@@ -3,7 +3,6 @@
     "ex": "npm run start -- example",
     "sol": "ts-node src/index.ts solution",
     "dev": "npm run start -- dev",
-
     "start": "ts-node-dev --rs --cls --respawn src/index.ts",
     "build": "tsc"
   },

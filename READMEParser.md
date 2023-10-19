@@ -15,7 +15,7 @@ const  caroshark = new  Caroshark({ level:  1 });
 
   
 
-Caroshark.inFilesMap = (str: string): LevelData  => {
+Caroshark.inFilesMap = (str: string)  => {
 
 return (new  Parser(str.split("\n").map((x) =>  x.trim())))
 
@@ -59,7 +59,7 @@ Parses one number on that line
 |Parser| Line .in file | Result |
 |--|--| -- |
 | `.number('x y')` | 7 13  | `data.x = 7, data.y = 13` 
-| `.number('x/y',splitBy = '/')` | 1/3  | `data.x = 1, data.y = 3` 
+| `.number('x/y', '/')` | 1/3  | `data.x = 1, data.y = 3` 
 
 #### Skip  
 **skip(length: number | string = 1)**

@@ -7,7 +7,7 @@ const caroshark = new Caroshark({ level: 1 });
 Caroshark.inFilesMap = (str: string) => {
     const s = str.split("\n").map((x) => x.trim());
     return (new Parser(s))
-        .number("n")
+        .numbers("n")
         .build();
 }
 

@@ -10,15 +10,26 @@ export const fight = (left: "P" | "R" | "S", right: string) => {
 
 export const tournamentAfterTwoRounds = (tournament: string): string => {
     for (let k=0; k<2; k++) {
-        let nextBracket = "";
-        for (let j = 0; j < tournament.length; j += 2) {
-          let left = tournament[j];
-          let right = tournament[j + 1];
-          nextBracket += fight(left as any, right);
-        }
-        tournament = nextBracket;
+      tournament = nextBracket(tournament);
     }
     return tournament;
+}
+
+export const tournamentFinal = (tournament: string): string => {
+  while (tournament.length > 2) {
+    tournament = nextBracket(tournament);
+  }
+  return tournament;
+}
+
+const nextBracket = (tournament: string): string => {
+  let nextBracket = "";
+  for (let j = 0; j < tournament.length; j += 2) {
+    let left = tournament[j];
+    let right = tournament[j + 1];
+    nextBracket += fight(left as any, right);
+  }
+  return nextBracket;
 }
 
 // export class Tournament {

@@ -10,8 +10,11 @@ const inFilesMap = (str: string) => {
         .number("m")
         .matrix("matrix", "m")
         .number('n')
-        .lines('coordonates', 'n',(line)=>line.split(','))
-        .build() 
+        .lines('coordonates', 'n', (line) => line.split(' ').map(x => {
+            let arr = x.split(',')
+            return { x: parseFloat(arr[0]), y: parseFloat(arr[1]) }
+        }))
+        .build()
 }
 
 export const caroshark = new Caroshark({ inFilesMap });

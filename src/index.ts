@@ -14,12 +14,17 @@ caroshark.main = async (data: LevelData) => {
     let paths = []
     for (let pair of data.coordonates) {
         const point = pair[0];
-        const visited = new Array(data.m).fill(0).map(x => new Array(data.m).fill(false))
+        let visited = new Array(data.m).fill(0).map(x => new Array(data.m).fill(false))
 
         let matrix2 = JSON.parse(JSON.stringify(data.matrix))
-        dfs(matrix2, data.m, point, visited);
+        let waterCoordinate = {};
+        dfs(matrix2, data.m, point, visited, waterCoordinate);
 
-        console.log((matrix2))
+        console.log(matrix2.join('\n'));
+        visited = new Array(data.m).fill(0).map(x => new Array(data.m).fill(false))
+        let path = [];
+        getPath(matrix2, data.m, waterCoordinate, visited, path)
+        console.log(path);
     }
 
     return 1;

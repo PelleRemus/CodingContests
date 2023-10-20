@@ -1,4 +1,3 @@
-import PF from 'pathfinding'
 
 export function findIslands(matrix) {
     const rows = matrix.length;
@@ -40,19 +39,31 @@ export function findIslands(matrix) {
     return islands;
 }
 
-export const getPath = (matrix) => {
-    const grid = new PF.Grid(matrix);
-    const finder = new PF.AStarFinder({
-        allowDiagonal: true
-    });
-
-    var path = finder.findPath(1, 2, 4, 2, grid);
-    return [];
-}
-export const dfs = (matrix, m, coordinate, visited) => {
+export const getPath = (matrix, m, coordinate, visited, path) => {
+    console.log(coordinate)
     if (coordinate.x < 0 || coordinate.x >= m || coordinate.y < 0 || coordinate.y >= m
-        || matrix[coordinate.y][coordinate.x] == 0) {
+        || matrix[coordinate.y][coordinate.x] != 2 || visited[coordinate.y][coordinate.x]) {
+        return;
+    }
+    visited[coordinate.y][coordinate.x] = true;
+    path.push(coordinate);
+
+    getPath(matrix, m, { x: coordinate.x - 1, y: coordinate.y }, visited, path); // Up
+    getPath(matrix, m, { x: coordinate.x + 1, y: coordinate.y }, visited, path); // Down
+    getPath(matrix, m, { x: coordinate.x, y: coordinate.y - 1 }, visited, path); // Left
+    getPath(matrix, m, { x: coordinate.x, y: coordinate.y + 1 }, visited, path); // Righ
+    getPath(matrix, m, { x: coordinate.x - 1, y: coordinate.y - 1 }, visited, path); // Up Left
+    getPath(matrix, m, { x: coordinate.x - 1, y: coordinate.y + 1 }, visited, path); // Up Right
+    getPath(matrix, m, { x: coordinate.x + 1, y: coordinate.y - 1 }, visited, path); // Down Left
+    getPath(matrix, m, { x: coordinate.x + 1, y: coordinate.y + 1 }, visited, path); // Down Right
+}
+
+export const dfs = (matrix, m, coordinate, visited, waterCoordinate) => {
+    if (coordinate.x < 0 || coordinate.x >= m || coordinate.y < 0 || coordinate.y >= m
+        || matrix[coordinate.y][coordinate.x] != 1) {
         matrix[coordinate.y][coordinate.x] = 2;
+        waterCoordinate.x = coordinate.x;
+        waterCoordinate.y = coordinate.y;
         return;
     }
     if (visited[coordinate.y][coordinate.x]) {
@@ -60,8 +71,8 @@ export const dfs = (matrix, m, coordinate, visited) => {
     }
     visited[coordinate.y][coordinate.x] = true;
 
-    dfs(matrix, m, { x: coordinate.x - 1, y: coordinate.y }, visited); // Up
-    dfs(matrix, m, { x: coordinate.x + 1, y: coordinate.y }, visited); // Down
-    dfs(matrix, m, { x: coordinate.x, y: coordinate.y - 1 }, visited); // Left
-    dfs(matrix, m, { x: coordinate.x, y: coordinate.y + 1 }, visited); // Right
+    dfs(matrix, m, { x: coordinate.x - 1, y: coordinate.y }, visited, waterCoordinate); // Up
+    dfs(matrix, m, { x: coordinate.x + 1, y: coordinate.y }, visited, waterCoordinate); // Down
+    dfs(matrix, m, { x: coordinate.x, y: coordinate.y - 1 }, visited, waterCoordinate); // Left
+    dfs(matrix, m, { x: coordinate.x, y: coordinate.y + 1 }, visited, waterCoordinate); // Right
 }

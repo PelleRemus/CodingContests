@@ -5,7 +5,7 @@ export const runType = process.argv[2] as RunTypes || "example";
 export type LevelData = {
     n: number,
     m: number,
-    matrix: Array<Array<string>>,
+    matrix: Array<Array<number>>,
     coordonates: Array<Array<{ x: number, y: number }>>
 };
 

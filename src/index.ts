@@ -1,44 +1,21 @@
 import { RunTypes } from "../lib/caroshark";
 import { caroshark, LevelData, runType } from "./setup";
 import { findIslands } from "./utils";
+import PF from 'pathfinding'
 
 caroshark.main = async (data: LevelData) => {
 
     // code here 
     let result = []
-    // const islands = findIslands(data.matrix);
 
-    let isValid = true;
-
-
-    for (let points of data.coordonates) {
-        isValid = true;
-
-        let p = []
-
-        for (let i = 0; i < 2 * points.length - 1; i++) {
-            if (i % 2 == 0)
-                p.push(points[i / 2])
-            else {
-                let p1 = points[(i - 1) / 2];
-                let p2 = points[(i - 1) / 2 + 1];
-                p.push(
-                    {
-                        x: ((p1.x + p2.x) / 2),
-                        y: ((p1.y + p2.y) / 2),
-                    }
-                )
-            }
-        }
-        // console.log(p)
-        const hasSamePoints = hasDuplicates(p)
-        if (hasSamePoints)
-            isValid = false
-        result.push(isValid ? "INVALID" : "VALID")
+    let allIslands = findIslands(data.matrix)
+    let islands = [];
+    for (let pair of data.coordonates) {
+        const point = pair[0];
+        islands.push(allIslands[getIslandNumber(point, allIslands)]);
     }
 
-
-    return result.join('\n');
+    return islands;
 };
 
 caroshark.generateOutput({
@@ -63,8 +40,6 @@ function getIslandNumber({ x, y }, islands) {
 function hasDuplicates(points: { x: number; y: number; }[]) {
     const s = points.map(x => JSON.stringify(x))
     const set = new Set(s)
-    console.log(s)
-    console.log(set.values())
     return points.length === set.size;
 }
 

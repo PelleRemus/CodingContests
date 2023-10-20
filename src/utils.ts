@@ -1,3 +1,5 @@
+import PF from 'pathfinding'
+
 export function findIslands(matrix) {
     const rows = matrix.length;
     const cols = matrix[0].length;
@@ -38,19 +40,28 @@ export function findIslands(matrix) {
     return islands;
 }
 
-export const dfs = (matrix, m, coordinate, visited, path) => {
-    if(coordinate.x < 0 || coordinate.x >= m || coordinate.y < 0 || coordinate.y >= m
+export const getPath = (matrix) => {
+    const grid = new PF.Grid(matrix);
+    const finder = new PF.AStarFinder({
+        allowDiagonal: true
+    });
+
+    var path = finder.findPath(1, 2, 4, 2, grid);
+    return [];
+}
+export const dfs = (matrix, m, coordinate, visited) => {
+    if (coordinate.x < 0 || coordinate.x >= m || coordinate.y < 0 || coordinate.y >= m
         || matrix[coordinate.y][coordinate.x] == 0) {
-            path.push(coordinate);
-            return;
+        matrix[coordinate.y][coordinate.x] = 2;
+        return;
     }
-    if(visited[coordinate.y][coordinate.x]) {
+    if (visited[coordinate.y][coordinate.x]) {
         return;
     }
     visited[coordinate.y][coordinate.x] = true;
 
-    dfs(matrix, m, { x: coordinate.x - 1, y: coordinate.y }, visited, path); // Up
-    dfs(matrix, m, { x: coordinate.x + 1, y: coordinate.y }, visited, path); // Down
-    dfs(matrix, m, { x: coordinate.x, y: coordinate.y - 1 }, visited, path); // Left
-    dfs(matrix, m, { x: coordinate.x, y: coordinate.y + 1 }, visited, path); // Right
+    dfs(matrix, m, { x: coordinate.x - 1, y: coordinate.y }, visited); // Up
+    dfs(matrix, m, { x: coordinate.x + 1, y: coordinate.y }, visited); // Down
+    dfs(matrix, m, { x: coordinate.x, y: coordinate.y - 1 }, visited); // Left
+    dfs(matrix, m, { x: coordinate.x, y: coordinate.y + 1 }, visited); // Right
 }

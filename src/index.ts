@@ -1,6 +1,6 @@
 import { RunTypes } from "../lib/caroshark";
 import { caroshark, LevelData, runType } from "./setup";
-import { findIslands } from "./utils";
+import { dfs, findIslands, getPath } from "./utils";
 import PF from 'pathfinding'
 
 caroshark.main = async (data: LevelData) => {
@@ -10,12 +10,19 @@ caroshark.main = async (data: LevelData) => {
 
     let allIslands = findIslands(data.matrix)
     let islands = [];
+
+    let paths = []
     for (let pair of data.coordonates) {
         const point = pair[0];
-        islands.push(allIslands[getIslandNumber(point, allIslands)]);
+        const visited = new Array(data.m).fill(0).map(x => new Array(data.m).fill(false))
+
+        let matrix2 = JSON.parse(JSON.stringify(data.matrix))
+        dfs(matrix2, data.m, point, visited);
+
+        console.log((matrix2))
     }
 
-    return islands;
+    return 1;
 };
 
 caroshark.generateOutput({

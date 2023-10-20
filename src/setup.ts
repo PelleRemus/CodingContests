@@ -7,7 +7,10 @@ export type LevelData = { n: number } | any;
 const inFilesMap = (str: string) => {
     const s = str.split("\n").map((x) => x.trim());
     return (new Parser(s))
-        .number("n")
+        .number("m")
+        .matrix("matrix", "m")
+        .number('n')
+        .lines('coordonates', 'n',(line)=>line.split(','))
         .build() 
 }
 

@@ -40,7 +40,7 @@ export function findIslands(matrix) {
 }
 
 export const getPath = (matrix, m, coordinate, visited, path) => {
-    console.log(coordinate)
+    
     if (coordinate.x < 0 || coordinate.x >= m || coordinate.y < 0 || coordinate.y >= m
         || matrix[coordinate.y][coordinate.x] != 2 || visited[coordinate.y][coordinate.x]) {
         return;

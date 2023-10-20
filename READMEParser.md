@@ -14,22 +14,15 @@
 const  caroshark = new  Caroshark({ level:  1 });
 
   
+Caroshark.inFilesMap = (str: string) => {
 
-Caroshark.inFilesMap = (str: string)  => {
-
-return (new  Parser(str.split("\n").map((x) =>  x.trim())))
-
-.number("n")
-
-.numbers("a b")
-
-.numbers("m")
-
-.string("path")
-
-.lines("commands", 'n', (line: string) =>  line.split(' '))
-
-.build();
+    return (new Parser(str.split("\n").map((x) => x.trim())))
+        .number("n")
+        .numbers("a b")
+        .numbers("m")
+        .string("path")
+        .lines("commands", 'n', (line: string) => line.split(' '))
+        .build();
 
 }
 

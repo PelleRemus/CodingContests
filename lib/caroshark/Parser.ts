@@ -88,7 +88,7 @@ export class Parser {
         return this
     }
 
-    build() {
-        return this.obj;
+    build<T>(): T {
+        return this.obj as T;
     }
 }

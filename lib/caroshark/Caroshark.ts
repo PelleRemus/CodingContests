@@ -1,5 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
+import { RunTypes } from ".";
+
+const runType = process.argv[2] as RunTypes || "example";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class Caroshark {
@@ -28,18 +31,43 @@ export class Caroshark {
 
   constructor({
     level,
+    inFilesMap,
   }: {
-    level: number;
+    level?: number;
+    inFilesMap?: (str: string) => any;
   }) {
-    this.level = level;
 
-    Caroshark.inFilesMap = (str: string) =>
+    Caroshark.inFilesMap = inFilesMap || ((str: string) =>
       str
         .split("\n")
         .map((x) => x.trim())
-        .map((x) => (x != "" && !isNaN(x as any) ? parseFloat(x) : x));
+        .map((x) => (x != "" && !isNaN(x as any) ? parseFloat(x) : x)))
+      ;
 
+    this.level = level ? level : this.#findLevel();
+    console.log("Playing level: ", this.level, runType, new Date().toISOString())
     this.#loadInFiles();
+  }
+
+  #findLevel() {
+    let level = 1;
+    function isLevelReady(l: number) {
+      const existsFolder = fs.existsSync(path.join(
+        __dirname,
+        `../../levels/level${l}/in/`,
+      ));
+      const existsFile = fs.existsSync(path.join(
+        __dirname,
+        `../../levels/level${l}/in/`,
+        `level${level}_1.in`
+      ));
+      return existsFolder && existsFile;
+    }
+    do{
+      level++;
+    }
+    while (isLevelReady(level))
+    return level - 1;
   }
 
   #formatFile(fileContent: string) {
@@ -48,11 +76,6 @@ export class Caroshark {
       fileContent = fileContent.substring(0, fileContent.length - 1);
     return Caroshark.inFilesMap(fileContent);
   }
-  /*   get in() {
-      return this.inFiles.map((file) => {
-        this.#formatFile(file)
-      });
-    } */
 
   async #generateOutputLevel({
     consoleOnly = true,
@@ -83,8 +106,8 @@ export class Caroshark {
 
   }
   async generateOutput({
-    consoleOnly = true,
-    exampleOnly = true,
+    consoleOnly = runType !== RunTypes.SOLUTION,
+    exampleOnly = runType === RunTypes.EXAMPLE,
     subLevel,
     subLevelFrom = 1,
     subLevelTo = this.inFiles.length,
@@ -99,7 +122,7 @@ export class Caroshark {
       this.#exampleFile = this.#formatFile(this.#exampleInFile)
     else
       this.#files = this.inFiles.map((file) => this.#formatFile(file))
-    
+
     if (exampleOnly) {
       const output = await this.main(this.#exampleFile, -1);
       if (consoleOnly) {

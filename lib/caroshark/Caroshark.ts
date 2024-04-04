@@ -31,9 +31,11 @@ export class Caroshark {
 
   constructor({
     level,
+    dryRun,
     inFilesMap,
   }: {
     level?: number;
+      dryRun?: boolean;
     inFilesMap?: (str: string) => any;
   }) {
 
@@ -46,6 +48,7 @@ export class Caroshark {
 
     this.level = level ? level : this.#findLevel();
     console.log("Playing level: ", this.level, runType, new Date().toISOString())
+    if (!dryRun)
     this.#loadInFiles();
   }
 

@@ -38,3 +38,6 @@ Citesteste si scrie(fisiere) doar fisierul de in. Executa doar odata
 ```
 npm run sol
 ```
+
+### Dry run
+Use dry run to execute the `main` function without loading the in files. Recommended for debugging.

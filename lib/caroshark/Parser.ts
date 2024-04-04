@@ -1,12 +1,17 @@
-export class Parser {
-    obj: Record<string, any> = {};
+type NamesToKeys<S extends string> = S extends `${infer First} ${infer Rest}`
+    ? First | NamesToKeys<Rest>
+    : S;
+export class Parser<T extends Record<string, unknown> = {}> {
+    constructor(readonly obj: T, private fileContent: Array<string>, private i: number = 0) { }
 
-    constructor(private fileContent: Array<string>, private i: number = 0) { }
+    static create(fileContent: Array<string>, i: number = 0): Parser {
+        return new Parser({}, fileContent, i);
+    }
 
-    number(name: string) {
-        this.obj[name] = parseFloat(this.fileContent[this.i]);
-        this.i++;
-        return this;
+    number<K extends string>(name: K): Parser<T & { [k in K]: number }> {
+        const nextPart = { [name]: parseFloat(this.fileContent[this.i]) } as { [k in K]: number };
+
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i + 1);
     }
 
     /**
@@ -14,81 +19,94 @@ export class Parser {
      * @example .numbers('x')
      * @example .numbers('x y')
      */
-    numbers(names: string, splitBy = ' ') {
+    numbers<K extends string>(names: K, splitBy = ' '): Parser<T & { [q in NamesToKeys<K>]: number }> {
+        let nextPart = {} as any;
+
         let variables = names.split(splitBy);
         let values = this.fileContent[this.i].split(splitBy).map(x => parseFloat(x));
         for (let i = 0; i < variables.length; i++)
-            this.obj[variables[i]] = values[i];
+            nextPart[String(variables[i])] = values[i];
 
-        this.i++;
-        return this;
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i + 1);
     }
 
     skip(length: number | string = 1) {
-        const n = typeof length === 'number' ? length : this.obj[length];
-        this.i += n;
-        return this
+        const n = typeof length === 'number' ? length : (this.obj[length] as number);
+        return new Parser(this.obj, this.fileContent, this.i + n);
     }
 
-    string(name: string) {
-        this.obj[name] = this.fileContent[this.i];
-        this.i++;
-        return this;
+    string<K extends string>(name: K): Parser<T & { [k in K]: string }> {
+        const nextPart = { [name]: this.fileContent[this.i] } as { [k in K]: string };
+
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i + 1);
     }
 
-    array(name: string, splitBy = '', mapFunc?: (x: string) => any) {
+    array<K extends string, V>(name: K, splitBy = '', mapFunc?: (x: string) => V extends unknown ? string : V): Parser<T & { [k in K]: Array<ReturnType<typeof mapFunc>> }> {
         if (!mapFunc)
-            mapFunc = (x) => x
+            mapFunc = (x) => x as V extends unknown ? string : V
 
-        this.obj[name] = this.fileContent[this.i].split(splitBy).map(mapFunc);
-        this.i++;
-        return this;
+        const nextPart = {
+            [name]: this.fileContent[this.i].split(splitBy).map(mapFunc)
+        } as { [k in K]: Array<ReturnType<typeof mapFunc>> };
+
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i + 1);
     }
 
-    lines(name: string, length: number | string, mapFunc?: (line: string) => any) {
+    lines<K extends string, V>(name: K, length: number | string, mapFunc?: (line: string) => V extends unknown ? string : V): Parser<T & { [k in K]: Array<ReturnType<typeof mapFunc>> }> {
         if (!mapFunc)
-            mapFunc = (x) => x
-        const n = typeof length === 'number' ? length : this.obj[length];
+            mapFunc = (x) => x as V extends unknown ? string : V
+
+        const n = typeof length === 'number' ? length : (this.obj[length] as number);
         const arr = [];
 
         for (let i = 0; i < n; i++)
             arr.push(mapFunc(this.fileContent[this.i + i]))
 
-        this.obj[name] = arr;
-        this.i += n;
-        return this
+        const nextPart = {
+            [name]: arr
+        } as { [k in K]: Array<ReturnType<typeof mapFunc>> };
+
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i + n);
     }
 
-    matrix(name: string, length: number | string, splitBy = '', mapFunc?: (line: string) => any) {
+    matrix<K extends string, V>(name: K, length: number | string, splitBy = '', mapFunc?: (line: string) => V extends unknown ? string : V): Parser<T & { [k in K]: Array<Array<ReturnType<typeof mapFunc>>> }> {
         if (!mapFunc)
-            mapFunc = (x) => x
-        const n = typeof length === 'number' ? length : this.obj[length];
-        const arr = [];
+            mapFunc = (x) => x as V extends unknown ? string : V
+
+        const n = typeof length === 'number' ? length : (this.obj[length] as number);
+        const arr: Array<Array<any>> = [];
+
+        console.log({ n, arr, fileContent: this.fileContent.length })
 
         for (let i = 0; i < n; i++)
             arr.push(this.fileContent[this.i + i].split(splitBy).map(mapFunc))
 
-        this.obj[name] = arr;
-        this.i += n;
-        return this
+
+        const nextPart = {
+            [name]: arr
+        } as { [k in K]: Array<Array<ReturnType<typeof mapFunc>>> };
+
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i + n);
     }
 
-    arrayOfObject(name: string, length: number | string, p: (P: Parser) => any) {
+    arrayOfObject<K extends string, V extends Parser>(name: K, length: number | string, p: (P: Parser) => V): Parser<T & { [k in K]: Array<ReturnType<typeof p>['obj']> }> {
 
-        const n = typeof length === 'number' ? length : this.obj[length];
+        const n = typeof length === 'number' ? length : this.obj[length] as number;
         const arr = [];
 
         for (let i = 0; i < n; i++) {
-            const obj = p(new Parser(this.fileContent, this.i)).build();
+            const obj = p(Parser.create(this.fileContent, this.i)).build();
             arr.push(obj)
             this.i += Object.keys(obj).length - 1;
         }
+        const nextPart = {
+            [name]: arr
+        } as { [k in K]: Array<Array<ReturnType<typeof p>['obj']>> };
 
-        this.obj[name] = arr;
-        return this
+        return new Parser({ ...this.obj, ...nextPart }, this.fileContent, this.i);
     }
 
-    build<T>(): T {
-        return this.obj as T;
+    build(): T {
+        return this.obj;
     }
 }

@@ -86,7 +86,7 @@ Parses one number on that line
 |Parser| Lines .in file | Result |
 |--|--| -- |
 | `.matrix('matrix', 'n')` | 123<br>456<br>789 | `data.matrix = [[1,2,3], [4,5,6], [7,8,9]]`
-| `.lines('matrix', 'n', " ",  x => x*10)` | 1 2 3<br>4 5 6<br>7 8 9 | `data.matrix = [[10,20,30], [40,50,60], [70,80,90]]`
+| `.matrix('matrix', 'n', " ",  x => x*10)` | 1 2 3<br>4 5 6<br>7 8 9 | `data.matrix = [[10,20,30], [40,50,60], [70,80,90]]`
 
 #### Array of objects
 **arrayOfObject(name: string, length: number | string, p: (P: Parser) =>  any)**

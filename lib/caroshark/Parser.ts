@@ -1,6 +1,7 @@
-type NamesToKeys<S extends string> = S extends `${infer First} ${infer Rest}`
-    ? First | NamesToKeys<Rest>
+type NamesToKeys<S extends string, Sep extends string> = S extends `${infer First}${Sep}${infer Rest}`
+    ? First | NamesToKeys<Rest, Sep>
     : S;
+
 export class Parser<T extends Record<string, unknown> = {}> {
     constructor(readonly obj: T, private fileContent: Array<string>, private i: number = 0) { }
 
@@ -19,7 +20,7 @@ export class Parser<T extends Record<string, unknown> = {}> {
      * @example .numbers('x')
      * @example .numbers('x y')
      */
-    numbers<K extends string>(names: K, splitBy = ' '): Parser<T & { [q in NamesToKeys<K>]: number }> {
+    numbers<K extends string, Sep extends string>(names: K, splitBy: Sep = ' ' as Sep): Parser<T & { [q in NamesToKeys<typeof names, string extends Sep ? ' ' : Sep>]: number }> {
         let nextPart = {} as any;
 
         let variables = names.split(splitBy);

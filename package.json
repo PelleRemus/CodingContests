@@ -3,7 +3,6 @@
     "ex": "npm run start -- example",
     "sol": "ts-node src/index.ts solution",
     "dev": "npm run start -- dev",
-
     "start": "ts-node-dev --rs --cls --respawn src/index.ts",
     "build": "tsc"
   },
@@ -13,5 +12,8 @@
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.12"
   }
 }

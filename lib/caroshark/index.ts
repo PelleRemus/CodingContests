@@ -1,5 +1,6 @@
 import { Caroshark } from './Caroshark';
 import { Parser } from './Parser';
+import * as LevelExtractor from './LevelExtractor';
 export enum RunTypes {
 
   // Citesteste si scrie(consola) doar fisierul de test. Live update
@@ -13,5 +14,6 @@ export enum RunTypes {
 }
 export {
   Caroshark,
-  Parser
+  Parser,
+  LevelExtractor
 };

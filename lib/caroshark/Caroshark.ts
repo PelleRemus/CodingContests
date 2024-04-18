@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { RunTypes } from ".";
+import { unzipLevelFile } from "./LevelExtractor";
 
 const runType = process.argv[2] as RunTypes || "example";
 
@@ -31,25 +32,30 @@ export class Caroshark {
 
   constructor({
     level,
+    //** Doesnt read local files. Best for library development purposes */ 
     dryRun,
     inFilesMap,
   }: {
     level?: number;
       dryRun?: boolean;
     inFilesMap?: (str: string) => any;
-  }) {
-
+    }) {
     Caroshark.inFilesMap = inFilesMap || ((str: string) =>
       str
         .split("\n")
         .map((x) => x.trim())
-        .map((x) => (x != "" && !isNaN(x as any) ? parseFloat(x) : x)))
-      ;
+        .map((x) => (x != "" && !isNaN(x as any) ? parseFloat(x) : x)));
 
+    this.preload()
     this.level = level ? level : this.#findLevel();
     console.log("Playing level: ", this.level, runType, new Date().toISOString())
     if (!dryRun)
-    this.#loadInFiles();
+      this.#loadInFiles();
+
+  }
+
+  preload() {
+    unzipLevelFile();
   }
 
   #findLevel() {
@@ -66,7 +72,7 @@ export class Caroshark {
       ));
       return existsFolder && existsFile;
     }
-    do{
+    do {
       level++;
     }
     while (isLevelReady(level))
@@ -156,6 +162,7 @@ export class Caroshark {
         fileName
       );
     }
+    // this.#exampleInFile = fs.readFileSync(getInFilesPath(`level${this.level}_0.in`), "utf8");
     this.#exampleInFile = fs.readFileSync(getInFilesPath(`level${this.level}_example.in`), "utf8");
 
     this.inFiles = [];

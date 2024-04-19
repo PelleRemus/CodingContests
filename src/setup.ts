@@ -7,7 +7,13 @@ const inFilesMap = (str: string) => {
     const s = str.split("\n").map((x) => x.trim());
     return Parser.create(s)
         .number("n")
-        .lines('paths', 'n')
+        .arrayOfObject('lawns', 'n', p =>
+            p
+                .numbers("w h")
+                .matrix("m", 3, '')
+                .string("path")
+        )
+        // .lines('paths', 'n')
         // .matrix("m", 'n', '')
         // .numbers('x y')
         // .number("steps")

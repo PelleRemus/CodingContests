@@ -77,7 +77,7 @@ export class Parser<T extends Record<string, unknown> = {}> {
         const n = typeof length === 'number' ? length : (this.obj[length] as number);
         const arr: Array<Array<any>> = [];
 
-        console.log({ n, arr, fileContent: this.fileContent.length })
+        // console.log({ n, arr, fileContent: this.fileContent.length })
 
         for (let i = 0; i < n; i++)
             arr.push(this.fileContent[this.i + i].split(splitBy).map(mapFunc))

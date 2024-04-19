@@ -1,17 +1,10 @@
 import { RunTypes } from "../lib/caroshark";
 import { caroshark, LevelData, runType } from "./setup";
+import { generateLawnFromPath } from "./utils";
 
-let M = {
-    'W': 0,
-    'D': 1,
-    'S': 2,
-    'A': 3,
-}
 caroshark.main = async (data: LevelData) => {
 
-    // code here 
-    let v = []
-    for (let path of data.paths) {
+    function getBoundaries(path) {
         let x = { min: 0, max: 0, current: 0 }
         let y = { min: 0, max: 0, current: 0 }
 
@@ -38,10 +31,48 @@ caroshark.main = async (data: LevelData) => {
             }
         }
 
-        v.push(Math.abs(x.max - x.min) + 1 + ' ' + (Math.abs(y.max - y.min) + 1))
+        return { w: Math.abs(x.max - x.min) + 1, h: (Math.abs(y.max - y.min) + 1) }
+
     }
 
-    return v.join(`\n`);
+    let solution = []
+    for (let lawn of data.lawns) {
+
+        let genLawn = generateLawnFromPath(lawn.path)
+
+        let b = getBoundaries(lawn.path)
+
+
+        let v = genLawn.flat()
+        let dic = {}
+        for (let x of v) {
+            if (!(x in dic))
+                dic[x] = 0
+            dic[x]++
+        }
+        // return dic;
+
+        const isGood = Object.keys(dic).length == 2 && '0' in dic && '1' in dic && dic['0'] == 1
+
+        let p = lawn.m.flat().indexOf('X')
+        let tree = {
+            x: Math.floor(p % lawn.m[0].length),
+            y: Math.floor(p / lawn.m[0].length)
+        }
+
+        if (
+            genLawn.length != b.h ||
+            genLawn[0].length != b.w ||
+            !isGood ||
+            genLawn[tree.y][tree.x] != 0
+        )
+            solution.push("INVALID")
+        else
+            solution.push("VALID")
+
+    }
+
+    return solution.join(`\n`)
 };
 
 caroshark.generateOutput({

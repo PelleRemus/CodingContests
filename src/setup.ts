@@ -12,7 +12,7 @@ const inFilesMap = (str: string) => {
             P
                 .numbers("w h")
                 .matrix("m", 'h')
-                .array("path")
+                .string("path")
         )
         .build()
 

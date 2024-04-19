@@ -6,7 +6,8 @@ export const runType = process.argv[2] as RunTypes || "example";
 const inFilesMap = (str: string) => {
     const s = str.split("\n").map((x) => x.trim());
     return Parser.create(s)
-        // .number("n")
+        .number("n")
+        .lines('paths', 'n')
         // .matrix("m", 'n', '')
         // .numbers('x y')
         // .number("steps")
@@ -22,4 +23,4 @@ const inFilesMap = (str: string) => {
 }
 export type LevelData = ReturnType<typeof inFilesMap>
 
-export const caroshark = new Caroshark({ inFilesMap, level: 3, dryRun: false });
+export const caroshark = new Caroshark({ inFilesMap, dryRun: false });

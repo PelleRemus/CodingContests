@@ -5,9 +5,17 @@ export const runType = process.argv[2] as RunTypes || "example";
 
 const inFilesMap = (str: string) => {
     const s = str.split("\n").map((x) => x.trim());
+
     return Parser.create(s)
         .number("n")
-        .lines('paths', 'n')
+        .arrayOfObject('lawns', 'n', P =>
+            P
+                .numbers("w h")
+                .matrix("m", 'h')
+                .array("path")
+        )
+        .build()
+
         // .matrix("m", 'n', '')
         // .numbers('x y')
         // .number("steps")
@@ -18,8 +26,7 @@ const inFilesMap = (str: string) => {
         //         .numbers("x y")
         //         .number("stepCount")
         //         .array("path")
-        // )
-        .build();
+    // )
 }
 export type LevelData = ReturnType<typeof inFilesMap>
 
